@@ -3,7 +3,7 @@
 
 - Console: http://localhost:8080
     - USR: admin
-    - PWD: KnMrsc3SrmOdhUkN
+    - PWD: fE8BSKMOieyFHeYI
 
 ```
 # host
@@ -25,14 +25,16 @@ kubectl get namespace
 kubectl get all -n ingress-nginx
 kubectl get pod -n ingress-nginx
 kubectl get service -n ingress-nginx
+kubectl get ingress -n ingress-nginx
 
 # expose controller
 kubectl --namespace ingress-nginx port-forward service/ingress-nginx-controller 8888:80
-kubectl logs -n ingress-nginx pod/ingress-nginx-controller-6cc5ccb977-bn8gj --all-containers
+kubectl logs -n ingress-nginx pod/ingress-nginx-controller-6cc5ccb977-r277h --all-containers
 
 
 # inspect namespace 'monitoring'
 kubectl get all -n monitoring
+kubectl get pod -n monitoring
 kubectl get service -n monitoring
 kubectl get ingress -n monitoring
 ---

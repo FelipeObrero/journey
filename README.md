@@ -21,7 +21,10 @@ minikube addons enable ingress
 
 ```
 kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.1.2/manifests/install.yaml
+kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.1.2/manifests/install.yaml
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
 - access ArgoCD UI
@@ -38,7 +41,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 - access at ArgoCD: http://localhost:8080
     - USR: admin
-    - PWD: KnMrsc3SrmOdhUkN
+    - PWD: fE8BSKMOieyFHeYI
 
 
 ## Install Prometheus/Grafana stack
