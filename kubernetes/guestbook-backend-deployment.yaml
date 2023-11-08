@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-backend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: guestbook-backend
+  template:
+    metadata:
+      labels:
+        app: guestbook-backend
+    spec:
+      containers:
+      - image: mastrogiovanni/codemotion-guestbook-backend:0.0.5
+        name: guestbook-backend
+        ports:
+        - name: web
+          containerPort: 3000

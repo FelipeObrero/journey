@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: guestbook
+  labels:
+    app: prometheus-guestbook
+spec:
+  serviceAccountName: prometheus-k8s
+  serviceMonitorSelector:
+    matchLabels:
+      team: backend
+  resources:
+    requests:
+      memory: 400Mi
+  enableAdminAPI: false
