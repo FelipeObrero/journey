@@ -1,101 +1,116 @@
-# Minikube
 
-## Install minikube
+# Journey into Observability
+> 13/10/2021: Codemotion Webinar - A tutto DevOps
 
+
+## Install MiniKube
+
+```
+# link
 https://minikube.sigs.k8s.io/docs/start/
 
-## Start minikube
+# start
+minikube start
 
-`minikube start`
-
-## Enable ingress: 
-
-`minikube addons enable ingress`
-# Install ArgoCD
-
-```bash
-kubectl create namespace argocd
-
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-watch kubectl get pods -n argocd
+# enable ingress
+minikube addons enable ingress
 ```
 
-## Expose Argo
 
-`kubectl port-forward svc/argocd-server -n argocd 8080:443`
+## Install ArgoCD in k8s
 
-Access to Argo using username admin and as password the result of the following:
+```
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
 
-`kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
+- access ArgoCD UI
+```
+kubectl get svc -n argocd
+kubectl port-forward svc/argocd-server 8080:443 -n argocd
+```
 
-You can access at ArgoCD: [http://localhost:8080](http://localhost:8080)
-# Install Prometheus/Grafana stack
+- login with admin user and below token (as in documentation):
+```
+# from ubuntu shell
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode && echo
+```
 
-[Resource](https://computingforgeeks.com/setup-prometheus-and-grafana-on-kubernetes/)
+- access at ArgoCD: http://localhost:8080
+    - USR: admin
+    - PWD: KnMrsc3SrmOdhUkN
 
-```bash
+
+## Install Prometheus/Grafana stack
+
+- https://computingforgeeks.com/setup-prometheus-and-grafana-on-kubernetes/
+
+```
 git clone https://github.com/prometheus-operator/kube-prometheus.git
-
 cd kube-prometheus
-
 kubectl create -f manifests/setup
-
 kubectl create -f manifests/
 ```
 
-## Expose prometheus, grafana, alert manager
+- expose prometheus, grafana, alert manager
 
-```bash
+```
 kubectl --namespace monitoring port-forward svc/grafana 3000
-
 kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090
-
 kubectl --namespace monitoring port-forward svc/alertmanager-main 9093
 ```
 
-# Deploy Aplication
 
-In Argo, create an application named guestbook using GIT URL `https://github.com/mastrogiovanni/codemotion-demo-2021.git` directory *kubernetes* and namespace *monitoring*.
+## Deploy Aplication
+
+In Argo, create an application with:
+- name: guestbook
+- url: https://github.com/FelipeObrero/journey.git
+- path: kubernetes
+- namespace: monitoring
 
 ## Access to Application
 
 Exlore the ingress host via:
 
-`kubectl get ingress -n monitoring`
+```
+kubectl get ingress -n monitoring
+```
 
 You should see something like 
 
 ```
 NAME                CLASS    HOSTS            ADDRESS        PORTS   AGE
-guestbook-ingress   <none>   guestbook.info   192.168.67.2   80      10m
+guestbook-ingress   nginx    guestbook.info   192.168.49.2   80      10m
 ```
 
 You need to add to your /etc/hosts a line
 
 ```
-192.168.67.2    guestbook.info
+192.168.49.2    guestbook.info
 ```
 
-After that you will:
-- reach application at http://guestbook.info
-- API at http://guestbook.info/api/hello
-- Backend prometheus metrics: http://guestbook.info/metrics
+After that you will reach:
+- application -> http://guestbook.info
+- api -> http://guestbook.info/api/hello
+- prometheus metrics -> http://guestbook.info/metrics
 
-# Grafana
 
-You can monitor your application using as filter the following:
+### Notes:
+
+I've installed ArgoCD on my kubernetes cluster using
 
 ```
-service="guestbook-backend"
+> kubectl create namespace argocd
+> kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
-A metrics is for example a Timeline with the following:
+You can delete the entire installation using this:
+```
+> kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
 
-`avg(rate(http_request_duration_seconds_sum{service="guestbook-backend"}[1m])) * 1000`
 
-# Local development
-
-Expose main ingress on local port 8888 of host machine
-
-`kubectl --namespace ingress-nginx port-forward svc/ingress-nginx-controller 8888:80`
+### Biblio:
+- https://github.com/mastrogiovanni/codemotion-demo-2021.git
+- https://gitlab.com/nanuchi/argocd-app-config
